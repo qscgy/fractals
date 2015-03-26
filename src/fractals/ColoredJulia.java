@@ -64,7 +64,8 @@ public class ColoredJulia extends JFrame{
 	}
 	
 	public static void main(String[] args) {
-		new ColoredJulia(1000,1000).setVisible(true);
+		ColoredJulia cj=new ColoredJulia(1000,1000);
+		
 	}
 
 }
