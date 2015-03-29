@@ -12,8 +12,8 @@ import java.awt.image.BufferedImage;
 
 public class ColoredMandelbrot extends JFrame {
 	BufferedImage img;
-	final int SCALE=240;
-	final int X_SHIFT=180;	//right shift
+	final int SCALE=120;
+	final int X_SHIFT=60;	//right shift
 	final int Y_SHIFT=0;	//up shift
 	final int MAX_ITER=2048;
 	final float SAT=1f;
@@ -40,17 +40,23 @@ public class ColoredMandelbrot extends JFrame {
 				//Complex c=new Complex((i-origin.a-X_SHIFT)/SCALE,(origin.b-j-Y_SHIFT)/SCALE);	//i and j are the pixel coordinates, which wust be scaled down
 				int k=0;
 				while(k<MAX_ITER && zx*zx+zy*zy<=4){
+					/*
 					//System.out.println(z.a+" "+z.b);
 					double tempZX=zx*zx-zy*zy+cx;
 					zy=2*zx*zy+cy;
 					zx=tempZX;
 					//z.square();
 					//z.add(c);
+					 */
+					double tempZX=Math.pow(zx, 3)-3*zx*zy*zy+cx;
+					zy=3*zx*zx*zy-Math.pow(zy,3)+cy;
+					zx=tempZX;
+					//System.out.println(k);
 					k++;
 				}
 				//System.out.println(zx*zx+zy*zy);
 				//img.setRGB(i,j,(MAX_ITER-k)*COLOR_SCALE);
-				img.setRGB(i,j,k|(k<<COLOR_SHIFT));
+				//img.setRGB(i,j,k|(k<<COLOR_SHIFT));
 				
 				float brightness=k<MAX_ITER?BRIGHTNESS:0;
 				float saturation=SAT;
@@ -59,7 +65,7 @@ public class ColoredMandelbrot extends JFrame {
 					hue=hue-1;
 				hue+=HUE_SHIFT;
 				Color color=Color.getHSBColor(hue,saturation,brightness);
-				//img.setRGB(i,j,color.getRGB());
+				img.setRGB(i,j,color.getRGB());
 			}
 		}
 		//System.out.println("done");
@@ -70,7 +76,7 @@ public class ColoredMandelbrot extends JFrame {
 	}
 	
 	public static void main(String[] args) {
-		new ColoredMandelbrot(800,800).setVisible(true);
+		new ColoredMandelbrot(400,400).setVisible(true);
 	}
 
 }
