@@ -13,8 +13,8 @@ import java.awt.image.BufferedImage;
 public class ColoredMandelbrot extends JFrame {
 	BufferedImage img;
 	final int SCALE=120;
-	final int X_SHIFT=60;	//right shift
-	final int Y_SHIFT=0;	//up shift
+	final int X_SHIFT=-60;	//right shift
+	final int Y_SHIFT=20;	//up shift
 	final int MAX_ITER=2048;
 	final float SAT=1f;
 	final float BRIGHTNESS=0.8f;

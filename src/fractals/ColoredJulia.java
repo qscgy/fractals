@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
- *Draws a Julia set with the rule f_c(z)=z^2+c, where c is a constant.
+ *Draws a Julia set with the rule f_c(z)=z^k+c, where c and k are constants.
  */
 public class ColoredJulia extends JFrame{
 	BufferedImage img;
@@ -13,34 +13,46 @@ public class ColoredJulia extends JFrame{
 	public final static int SQUARE_MODE=1;
 	public final static int CUBE_MODE=2;
 	
-	//final int SCALE=300;
-	int X_SHIFT=0;	//right shift
-	int Y_SHIFT=0;	//up shift
-	final int MAX_ITER=1024;
-	//float SAT=1f;
 	final float BRIGHTNESS=0.8f;
 	final float HUE_SHIFT=0.5f;
-	final int COLOR_SCALE=200;	//change this to change the color scheme
-	//final Complex c=new Complex(-0.707,0.0);
 	
-	public ColoredJulia(int w,int h,Complex c, float sat,int scale,int mode){
+	/**
+	 * Constructs a new <code>ColoredJulia</code> object, which displays an image of a Julia set.
+	 * @param w	the width of the image,in pixels
+	 * @param h	the height of the image, in pixels
+	 * @param c the complex value c in the polynomial
+	 * @param sat the saturation of the image
+	 * @param scale the zoom of the image
+	 * @param mode what power z is taken to (use one of this class' constants)
+	 * @param maxIter the maximum number of times to iterate the polynomial before breaking
+	 * @param xshift the amount by which the set is shifted right
+	 * @param yshift the amount by which the set is shifted up
+	 */
+	public ColoredJulia(int w,int h,Complex c, float sat,int scale,int mode,int maxIter,int xshift,int yshift){
 		super("Julia Set");
 		setBounds(0,0,w,h);
 		setResizable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		final int SCALE=scale;
+		drawJulia(c,sat,scale,mode,maxIter,xshift,yshift);
+	}
+	
+	/*
+	 * Does the actual drawing of the Julia set. Coloring is done with the Escape Time Algorithm.
+	 */
+	private void drawJulia(Complex c,float sat,int scale,int mode,int maxIter,int xshift,int yshift){
 		final Complex origin=new Complex(getWidth()/2,getHeight()/2);	//center of the window
 		img=new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_RGB);
 		for(int i=0;i<getWidth();i++){
+			//System.out.println(i);
 			for(int j=0;j<getHeight();j++){
 				//System.out.println(i+" "+j);
 				//Complex z=new Complex((i-origin.a-X_SHIFT)/SCALE,(origin.b-j-Y_SHIFT)/SCALE);	//i and j are the pixel coordinates, which wust be scaled down
 				
-				double zx=(i-origin.a-X_SHIFT)/SCALE;
-				double zy=(origin.b-j-Y_SHIFT)/SCALE;
+				double zx=(i-origin.a-xshift)/scale;
+				double zy=(origin.b-j-xshift)/scale;
 				
 				int k=0;
-				while(k<MAX_ITER && zx*zx+zy*zy<=4){
+				while(k<maxIter && zx*zx+zy*zy<=4){
 					//System.out.println(z.a+" "+z.b);
 					if(mode==SQUARE_MODE){
 						double tempZX=zx*zx-zy*zy+c.a;
@@ -56,16 +68,13 @@ public class ColoredJulia extends JFrame{
 				}
 				
 				//coloring algorithm based on number of iterations it took for loop to break
-				float brightness=k<MAX_ITER?BRIGHTNESS:0;
+				float brightness=k<maxIter?BRIGHTNESS:0;
 				float saturation=sat;
-				float hue=(k%MAX_ITER)/((float)MAX_ITER-1);
+				float hue=(k%maxIter)/((float)maxIter-1);
 				if(hue+HUE_SHIFT>1)
 					hue=hue-1;
 				hue+=HUE_SHIFT;
 				Color color=Color.getHSBColor(hue,saturation,brightness);
-				//System.out.println(k);
-				//img.setRGB(i,j,(MAX_ITER-k)*COLOR_SCALE);
-				//img.setRGB(i, j, k<<16);
 				img.setRGB(i,j,color.getRGB());
 			}
 		}
@@ -75,7 +84,7 @@ public class ColoredJulia extends JFrame{
 		g.drawImage(img,0,0,this);
 	}
 	
-	public static Complex getCValue(){	//prompts the user for the real and imaginary parts of c
+	private static Complex getCValue(){	//prompts the user for the real and imaginary parts of c
 		JTextField re=new JTextField(15);
 		JTextField im=new JTextField(15);
 		//JSlider sat=new JSlider(0,255,128);
@@ -108,7 +117,7 @@ public class ColoredJulia extends JFrame{
 	public static void main(String[] args) {
 		Complex c=getCValue();
 		if(c!=null){
-			ColoredJulia cj=new ColoredJulia(1000,1000,c,1.0f,300,ColoredJulia.CUBE_MODE);
+			ColoredJulia cj=new ColoredJulia(800,800,c,1.0f,240,ColoredJulia.SQUARE_MODE,256,0,50);
 			cj.setVisible(true);
 		} else {
 			return;
