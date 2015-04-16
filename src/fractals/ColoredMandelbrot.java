@@ -7,15 +7,14 @@ import java.awt.image.BufferedImage;
 /**
  * Draws the Mandelbrot set using the Escape Time Algorithm.
  * @author qscgy
- *
  */
 
 public class ColoredMandelbrot extends JFrame {
 	BufferedImage img;
-	final int SCALE=120;
-	final int X_SHIFT=-60;	//right shift
-	final int Y_SHIFT=20;	//up shift
-	final int MAX_ITER=2048;
+	final int SCALE=240;
+	final int X_SHIFT=0;	//right shift
+	final int Y_SHIFT=0;	//up shift
+	final int MAX_ITER=256;
 	final float SAT=1f;
 	final float BRIGHTNESS=0.8f;
 	final float HUE_SHIFT=0.5f;
@@ -76,7 +75,7 @@ public class ColoredMandelbrot extends JFrame {
 	}
 	
 	public static void main(String[] args) {
-		new ColoredMandelbrot(400,400).setVisible(true);
+		new ColoredMandelbrot(800,800).setVisible(true);
 	}
 
 }

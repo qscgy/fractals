@@ -1,8 +1,11 @@
 package fractals;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *Draws a Julia set with the rule f_c(z)=z^k+c, where c and k are constants.
@@ -33,6 +36,7 @@ public class ColoredJulia extends JFrame{
 		setBounds(0,0,w,h);
 		setResizable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		img=new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_RGB);
 		drawJulia(c,sat,scale,mode,maxIter,xshift,yshift);
 	}
 	
@@ -41,24 +45,25 @@ public class ColoredJulia extends JFrame{
 	 */
 	private void drawJulia(Complex c,float sat,int scale,int mode,int maxIter,int xshift,int yshift){
 		final Complex origin=new Complex(getWidth()/2,getHeight()/2);	//center of the window
-		img=new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_RGB);
 		for(int i=0;i<getWidth();i++){
 			//System.out.println(i);
 			for(int j=0;j<getHeight();j++){
 				//System.out.println(i+" "+j);
 				//Complex z=new Complex((i-origin.a-X_SHIFT)/SCALE,(origin.b-j-Y_SHIFT)/SCALE);	//i and j are the pixel coordinates, which wust be scaled down
 				
-				double zx=(i-origin.a-xshift)/scale;
-				double zy=(origin.b-j-xshift)/scale;
+				double zx=(i-origin.a-xshift)/scale;	//offset zx and zy so that the center of the window corresponds to (0,0)
+				double zy=(origin.b-j-yshift)/scale;
 				
-				int k=0;
+				int k=0;	//iteration count
 				while(k<maxIter && zx*zx+zy*zy<=4){
 					//System.out.println(z.a+" "+z.b);
 					if(mode==SQUARE_MODE){
+						//z=z^2+c
 						double tempZX=zx*zx-zy*zy+c.a;
 						zy=2*zx*zy+c.b;
 						zx=tempZX;
 					} else if(mode==CUBE_MODE){
+						//z=z^3+c
 						double tempZX=Math.pow(zx, 3)-3*zx*zy*zy+c.a;
 						zy=3*zx*zx*zy-Math.pow(zy,3)+c.b;
 						zx=tempZX;
@@ -84,10 +89,10 @@ public class ColoredJulia extends JFrame{
 		g.drawImage(img,0,0,this);
 	}
 	
-	private static Complex getCValue(){	//prompts the user for the real and imaginary parts of c
+	private static List<Object> getCValue(){	//prompts the user for the real and imaginary parts of c
 		JTextField re=new JTextField(15);
 		JTextField im=new JTextField(15);
-		//JSlider sat=new JSlider(0,255,128);
+		JSlider sat=new JSlider(0,255,128);
 				
 		JPanel cValues=new JPanel();
 		
@@ -96,18 +101,29 @@ public class ColoredJulia extends JFrame{
 		cValues.add(Box.createHorizontalStrut(15));
 		cValues.add(new JLabel("Im(c): "));
 		cValues.add(im);
-		//cValues.add(Box.createHorizontalStrut(15));
-		//cValues.add(sat);
+		cValues.add(Box.createHorizontalStrut(20));
+		cValues.add(new JLabel("Saturation: "));
+		cValues.add(new JTextField(15));
 		
-		int result=JOptionPane.showConfirmDialog(null,cValues,"Please enter c",JOptionPane.OK_CANCEL_OPTION);
+		Object[] inputs={
+				"Re(c): ", re,
+				"Im(c): ", im,
+				"Saturation: ", sat
+		};
+		
+		int result=JOptionPane.showConfirmDialog(null,inputs,"Please enter c",JOptionPane.OK_CANCEL_OPTION);
 		
 		if(result==JOptionPane.OK_OPTION){
 			try{
-				return new Complex(Double.parseDouble(re.getText()),Double.parseDouble(im.getText()));
+				List<Object> values=new ArrayList<>();
+				values.add(Double.parseDouble(re.getText()));
+				values.add(Double.parseDouble(im.getText()));
+				values.add(sat.getValue()/256.0f);
+;				return values;
 			} catch(NumberFormatException e){	//user entered invalid numbers
 				
 				JOptionPane.showMessageDialog(null, "You need to enter valid numbers", "You done goofed", JOptionPane.ERROR_MESSAGE);
-				return null;
+				return getCValue();	//hey, a use for recursion!
 			}
 		} else {
 			return null;
@@ -115,12 +131,11 @@ public class ColoredJulia extends JFrame{
 	}
 	
 	public static void main(String[] args) {
-		Complex c=getCValue();
+		List<Object> values=getCValue();
+		Complex c=new Complex((double)values.get(0),(double)values.get(1));
 		if(c!=null){
-			ColoredJulia cj=new ColoredJulia(800,800,c,1.0f,240,ColoredJulia.SQUARE_MODE,256,0,50);
+			ColoredJulia cj=new ColoredJulia(800,800,c,1.0f,240,ColoredJulia.SQUARE_MODE,256,0,0);
 			cj.setVisible(true);
-		} else {
-			return;
 		}
 	}
 
