@@ -3,6 +3,8 @@ package fractals;
 import javax.swing.*;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +15,9 @@ import java.util.List;
 public class ColoredJulia extends JFrame{
 	BufferedImage img;
 	
-	public final static int SQUARE_MODE=1;
-	public final static int CUBE_MODE=2;
+	public final static int SQUARE_MODE=0;
+	public final static int CUBE_MODE=1;
+	public static int MODE;
 	
 	final float BRIGHTNESS=0.8f;
 	final float HUE_SHIFT=0.5f;
@@ -90,10 +93,20 @@ public class ColoredJulia extends JFrame{
 	}
 	
 	private static List<Object> getCValue(){	//prompts the user for the real and imaginary parts of c
+		List<Object> values=new ArrayList<>();
 		JTextField re=new JTextField(15);
 		JTextField im=new JTextField(15);
 		JSlider sat=new JSlider(0,255,128);
-				
+		JComboBox<String> polynomial=new JComboBox<>(new String[]{"z^2+c","z^3+c"});
+		polynomial.setSelectedIndex(0);
+		polynomial.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e){
+				JComboBox polynomial=(JComboBox)e.getSource();
+				ColoredJulia.MODE=(int)polynomial.getSelectedIndex();
+			}
+		});
+		
+		/*
 		JPanel cValues=new JPanel();
 		
 		cValues.add(new JLabel("Re(c): "));
@@ -104,24 +117,24 @@ public class ColoredJulia extends JFrame{
 		cValues.add(Box.createHorizontalStrut(20));
 		cValues.add(new JLabel("Saturation: "));
 		cValues.add(new JTextField(15));
+		*/
 		
 		Object[] inputs={
 				"Re(c): ", re,
 				"Im(c): ", im,
-				"Saturation: ", sat
+				"Saturation: ", sat,
+				"z=", polynomial
 		};
 		
 		int result=JOptionPane.showConfirmDialog(null,inputs,"Please enter c",JOptionPane.OK_CANCEL_OPTION);
 		
 		if(result==JOptionPane.OK_OPTION){
 			try{
-				List<Object> values=new ArrayList<>();
 				values.add(Double.parseDouble(re.getText()));
 				values.add(Double.parseDouble(im.getText()));
 				values.add(sat.getValue()/256.0f);
-;				return values;
+				return values;
 			} catch(NumberFormatException e){	//user entered invalid numbers
-				
 				JOptionPane.showMessageDialog(null, "You need to enter valid numbers", "You done goofed", JOptionPane.ERROR_MESSAGE);
 				return getCValue();	//hey, a use for recursion!
 			}
@@ -132,10 +145,12 @@ public class ColoredJulia extends JFrame{
 	
 	public static void main(String[] args) {
 		List<Object> values=getCValue();
-		Complex c=new Complex((double)values.get(0),(double)values.get(1));
-		if(c!=null){
-			ColoredJulia cj=new ColoredJulia(800,800,c,1.0f,240,ColoredJulia.SQUARE_MODE,256,0,0);
-			cj.setVisible(true);
+		if(values!=null){
+			Complex c=new Complex((double)values.get(0),(double)values.get(1));
+			if(c!=null){
+				ColoredJulia cj=new ColoredJulia(800,800,c,(float)values.get(2),240,MODE,256,0,0);
+				cj.setVisible(true);
+			}
 		}
 	}
 
