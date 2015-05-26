@@ -96,7 +96,8 @@ public class ColoredJulia extends JFrame{
 		List<Object> values=new ArrayList<>();
 		JTextField re=new JTextField(15);
 		JTextField im=new JTextField(15);
-		JSlider sat=new JSlider(0,255,128);
+		//JSlider sat=new JSlider(0,255,128);
+		
 		JComboBox<String> polynomial=new JComboBox<>(new String[]{"z^2+c","z^3+c"});
 		polynomial.setSelectedIndex(0);
 		polynomial.addActionListener(new ActionListener() {
@@ -105,6 +106,9 @@ public class ColoredJulia extends JFrame{
 				ColoredJulia.MODE=(int)polynomial.getSelectedIndex();
 			}
 		});
+		
+		JTextField xshift=new JTextField(5);
+		JTextField yshift=new JTextField(5);
 		
 		/*
 		JPanel cValues=new JPanel();
@@ -122,8 +126,9 @@ public class ColoredJulia extends JFrame{
 		Object[] inputs={
 				"Re(c): ", re,
 				"Im(c): ", im,
-				"Saturation: ", sat,
-				"z=", polynomial
+				"z=", polynomial,
+				"X offset: ", xshift,
+				"Y offset: ", yshift
 		};
 		
 		int result=JOptionPane.showConfirmDialog(null,inputs,"Please enter c",JOptionPane.OK_CANCEL_OPTION);
@@ -132,10 +137,12 @@ public class ColoredJulia extends JFrame{
 			try{
 				values.add(Double.parseDouble(re.getText()));
 				values.add(Double.parseDouble(im.getText()));
-				values.add(sat.getValue()/256.0f);
+				values.add(Integer.parseInt(xshift.getText()));
+				values.add(Integer.parseInt(yshift.getText()));
+				//values.add(sat.getValue()/256.0f);
 				return values;
 			} catch(NumberFormatException e){	//user entered invalid numbers
-				JOptionPane.showMessageDialog(null, "You need to enter valid numbers", "You done goofed", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, "You need to enter valid numbers", "Try again", JOptionPane.ERROR_MESSAGE);
 				return getCValue();	//hey, a use for recursion!
 			}
 		} else {
@@ -148,7 +155,14 @@ public class ColoredJulia extends JFrame{
 		if(values!=null){
 			Complex c=new Complex((double)values.get(0),(double)values.get(1));
 			if(c!=null){
-				ColoredJulia cj=new ColoredJulia(800,800,c,(float)values.get(2),240,MODE,256,0,0);
+				ColoredJulia cj=new ColoredJulia(800,800,c,1.0f,240,MODE,256,(int)values.get(2),
+						(int)values.get(3));
+				/*
+				JPanel input=new JPanel();
+				input.setPreferredSize(new Dimension(200,200));
+				cj.add(input);
+				cj.pack();
+				*/
 				cj.setVisible(true);
 			}
 		}
