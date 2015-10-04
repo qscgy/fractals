@@ -17,8 +17,7 @@ public class ColoredJulia extends JFrame{
 	
 	public final static int SQUARE_MODE=0;
 	public final static int CUBE_MODE=1;
-	public final static int BURNING_SHIP=2;
-	public final static int EXP=3;	//TODO add exp(z) functionality
+	public final static int EXP_Z=2;
 	public static int MODE;
 	
 	final float BRIGHTNESS=0.8f;
@@ -73,10 +72,10 @@ public class ColoredJulia extends JFrame{
 						zy=3*zx*zx*zy-Math.pow(zy,3)+c.b;
 						zx=tempZX;
 						//System.out.println(k);
-					} else if(mode==BURNING_SHIP){
-						//Burning ship Julia set, uses
-						double tempZX=zx*zx-zy*zy-c.a;
-						zy=2*Math.abs(zx*zy)-c.b;
+					} else if(mode==EXP_Z){
+						//z=exp(z)+c
+						double tempZX=Math.exp(zx)*Math.cos(zy)+c.a;
+						zy=Math.exp(zx)*Math.sin(zy)+c.b;
 						zx=tempZX;
 					}
 					k++;
@@ -105,7 +104,7 @@ public class ColoredJulia extends JFrame{
 		JTextField im=new JTextField("0",15);
 		//JSlider sat=new JSlider(0,255,128);
 		
-		JComboBox<String> polynomial=new JComboBox<>(new String[]{"z^2+c","z^3+c","Burning Ship"});
+		JComboBox<String> polynomial=new JComboBox<>(new String[]{"z^2+c","z^3+c","exp(z)+c"});
 		polynomial.setSelectedIndex(0);
 		polynomial.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e){
