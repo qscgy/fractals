@@ -17,6 +17,8 @@ public class ColoredJulia extends JFrame{
 	
 	public final static int SQUARE_MODE=0;
 	public final static int CUBE_MODE=1;
+	public final static int BURNING_SHIP=2;
+	public final static int EXP=3;	//TODO add exp(z) functionality
 	public static int MODE;
 	
 	final float BRIGHTNESS=0.8f;
@@ -71,6 +73,11 @@ public class ColoredJulia extends JFrame{
 						zy=3*zx*zx*zy-Math.pow(zy,3)+c.b;
 						zx=tempZX;
 						//System.out.println(k);
+					} else if(mode==BURNING_SHIP){
+						//Burning ship Julia set, uses
+						double tempZX=zx*zx-zy*zy-c.a;
+						zy=2*Math.abs(zx*zy)-c.b;
+						zx=tempZX;
 					}
 					k++;
 				}
@@ -94,11 +101,11 @@ public class ColoredJulia extends JFrame{
 	
 	private static List<Object> getCValue(){	//prompts the user for the real and imaginary parts of c
 		List<Object> values=new ArrayList<>();
-		JTextField re=new JTextField(15);
-		JTextField im=new JTextField(15);
+		JTextField re=new JTextField("0",15);
+		JTextField im=new JTextField("0",15);
 		//JSlider sat=new JSlider(0,255,128);
 		
-		JComboBox<String> polynomial=new JComboBox<>(new String[]{"z^2+c","z^3+c"});
+		JComboBox<String> polynomial=new JComboBox<>(new String[]{"z^2+c","z^3+c","Burning Ship"});
 		polynomial.setSelectedIndex(0);
 		polynomial.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e){
@@ -107,8 +114,8 @@ public class ColoredJulia extends JFrame{
 			}
 		});
 		
-		JTextField xshift=new JTextField(5);
-		JTextField yshift=new JTextField(5);
+		JTextField xshift=new JTextField("0",5);
+		JTextField yshift=new JTextField("0",5);
 		
 		/*
 		JPanel cValues=new JPanel();
@@ -131,7 +138,7 @@ public class ColoredJulia extends JFrame{
 				"Y offset: ", yshift
 		};
 		
-		int result=JOptionPane.showConfirmDialog(null,inputs,"Please enter c",JOptionPane.OK_CANCEL_OPTION);
+		int result=JOptionPane.showConfirmDialog(null,inputs,"Please enter conditions",JOptionPane.OK_CANCEL_OPTION);
 		
 		if(result==JOptionPane.OK_OPTION){
 			try{
@@ -143,7 +150,7 @@ public class ColoredJulia extends JFrame{
 				return values;
 			} catch(NumberFormatException e){	//user entered invalid numbers
 				JOptionPane.showMessageDialog(null, "You need to enter valid numbers", "Try again", JOptionPane.ERROR_MESSAGE);
-				return getCValue();	//hey, a use for recursion!
+				return getCValue();
 			}
 		} else {
 			return null;
