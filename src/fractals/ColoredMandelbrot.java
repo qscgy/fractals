@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ColoredMandelbrot extends JFrame {
 	BufferedImage img;
-	final int SCALE=240;
+	final int SCALE=800;
 	final int X_SHIFT=100;	//right shift
 	final int Y_SHIFT=0;	//up shift
 	final int MAX_ITER=256;
